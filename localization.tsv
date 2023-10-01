@@ -25,4 +25,4 @@ spawncontrolmod_freq_SLOWER		Less Frequent
 spawncontrolmod_freq_NORMAL		Normal Frequency *
 spawncontrolmod_freq_QUICKER		More Frequent
 spawncontrolmod_freq_ALWAYS		Every Moon
-spawncontrolmod_freq_ALWAYS_cart		Every Even Moon
+spawncontrolmod_freq_ALWAYS_cart		Every Odd Numbered Moon

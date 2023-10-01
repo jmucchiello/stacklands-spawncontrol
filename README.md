@@ -11,3 +11,19 @@ You can also change the frequency with which certain event occur in the game:
 * Travelling Cart
 
 Each can be set to Never, Infrequently, Normal Frequency, Frequently, or Every Moon. 
+
+# Changelog
+
+1.0.0 Release
+
+[Github](https://github.com/jmucchiello/stacklands-spawncontrol)
+
+# Challenge Mods
+
+This mod is part of my serious of mods that allow you to control the difficulty of the game. Try these other mods for increased control.
+
+* [Strict Mode](https://steamcommunity.com/sharedfiles/filedetails/?id=3026405806)
+* Spawn Control (this mod)
+* Enemy Difficulty (coming soon)
+* DLC Difficulty (coming soon)
+* Peaceful Mode Toggle (coming soon)

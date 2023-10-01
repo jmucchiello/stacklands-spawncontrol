@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SpawnControlModNS
 {
@@ -21,6 +22,7 @@ namespace SpawnControlModNS
         private void Awake()
         {
             instance = this;
+            SetupConfig();
             Harmony.PatchAll();
         }
 
@@ -32,6 +34,30 @@ namespace SpawnControlModNS
             configRarePortals = NewToggle("spawncontrolmod_freq_rare");
             configPirates = NewToggle("spawncontrolmod_freq_pirates");
             configCart = NewToggle("spawncontrolmod_freq_cart");
+            configPortals.onChange = delegate (FrequencyStates value)
+            {
+                configRarePortals.Enable(value != FrequencyStates.NEVER);
+                return true;
+            };
+            configRarePortals.onDisplayText = () =>
+            {
+                string s = I.Xlat(configRarePortals.Name);
+                if (configPortals.Value == FrequencyStates.NEVER)
+                    s = "<s>" + s + "</s>";
+                return s;
+            };
+            configRarePortals.onDisplayEnumText = (FrequencyStates state) =>
+            {
+                string s = I.Xlat($"spawncontrolmod_freq_{state}");
+                if (configPortals.Value == FrequencyStates.NEVER)
+                    s = "<s>" + s + "</s>";
+                return s;
+            };
+            configRarePortals.onLoad = delegate ()
+            {
+                configRarePortals.Enable(configPortals.Value != FrequencyStates.NEVER);
+                configRarePortals.Update();
+            };
 
             ConfigFreeText configResetDefaults = new("none", Config, "spawncontrolmod_reset_defaults", "spawncontrolmod_reset_defaults_tooltip");
             configResetDefaults.Clicked += delegate (ConfigEntryBase _, CustomButton _)

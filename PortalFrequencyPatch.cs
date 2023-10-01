@@ -51,6 +51,8 @@ namespace SpawnControlModNS
             {
                 Type myClass = typeof(SpecialEvents_Patch);
                 List<CodeInstruction> result = new CodeMatcher(instructions)
+                    //        bool flag = CurrentMonth > 8 && CurrentMonth % 4 == 0;
+                    //        bool flag = CurrentMonth > SpecialEvents_Patch.PortalMinMonth && CurrentMonth % SpecialEvents_Patch.PortalDivisor == 0;
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_I4_8)
                     )
@@ -62,16 +64,20 @@ namespace SpawnControlModNS
                     )
                     .ThrowIfNotMatch("Can't find portal min month")
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "PortalDivisor"))
+                    //        bool spawnTravellingCart = (Random.value <= 0.1f && CurrentMonth >= 8 && CurrentMonth % 2 == 1) || CurrentMonth == 19;
+                    //        bool spawnTravellingCart = (Random.value <= SpecialEvents_Patch.FrequencyOfTravellingCart && CurrentMonth >= 8 && CurrentMonth % 2 == 1) || CurrentMonth == SpecialEvents_Patch.MoonIs19;
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_R4, 0.1f)
                     )
                     .ThrowIfNotMatch("Can't find portal divisor")
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "FrequencyOfTravellingCart"))
                     .MatchStartForward(
-                        new CodeMatch(OpCodes.Ldc_I4_S, (sbyte)19) // don't ask me why it's (sbyte)
+                        new CodeMatch(OpCodes.Ldc_I4_S, (sbyte)19) // don't ask me why. But, it needs (sbyte)
                     )
                     .ThrowIfNotMatch("Can't find travelling cart month = 19")
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "MoonIs19"))
+                    //         bool spawnPirateBoat = WorldManager.instance.BoardMonths.IslandMonth % 7 == 0 && WorldManager.instance.CurrentBoard.BoardOptions.CanSpawnPirateBoat;
+                    //         bool spawnPirateBoat = WorldManager.instance.BoardMonths.IslandMonth % SpecialEvents_Patch.PirateDivisor == 0 && WorldManager.instance.CurrentBoard.BoardOptions.CanSpawnPirateBoat;
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_I4_7)
                     )
@@ -81,6 +87,8 @@ namespace SpawnControlModNS
                         new CodeMatch(OpCodes.Ldstr, "happiness")
                     )
                     .ThrowIfNotMatch("Can't find happiness")
+                    //        bool spawnSadEvent = WorldManager.instance.CurrentBoard.Id == "happiness" && CurrentMonth > 4 && CurrentMonth % 4 == 0;
+                    //        bool spawnSadEvent = WorldManager.instance.CurrentBoard.Id == "happiness" && CurrentMonth > 4 && CurrentMonth % SadEventDivisor == 0;
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_I4_4)
                     )
@@ -96,6 +104,8 @@ namespace SpawnControlModNS
                         new CodeMatch(OpCodes.Ldc_I4_4)
                     )
                     .ThrowIfNotMatch("Can't find happiness min month")
+                    //            if (WorldManager.instance.CurrentRunVariables.StrangePortalSpawns % 4 == 0)
+                    //            if (WorldManager.instance.CurrentRunVariables.StrangePortalSpawns % SpecialEvents_Patch.RarePortalDivisor == 0)
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "RarePortalDivisor"))
                     .InstructionEnumeration()
                     .ToList();

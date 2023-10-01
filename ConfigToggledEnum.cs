@@ -20,7 +20,9 @@ namespace SpawnControlModNS
         public OnDisplayEnumText onDisplayEnumText;
 
         public delegate bool OnChange(T newValue); // return false to prevent acceptance of newValue
+        public delegate void OnLoad(); // return false to prevent acceptance of newValue
         public OnChange onChange;
+        public OnLoad onLoad;
 
         public string CloseButtonText = null; // if null, no close button is created
         public Color currentValueColor = Color.black;
@@ -71,11 +73,12 @@ namespace SpawnControlModNS
                     anchor.Clicked += delegate
                     {
                         if (++content >= EnumNames.Length) content = 0;
+                        onChange?.Invoke(Value);
                         anchor.TextMeshPro.text = SizeText(FontSize, GetDisplayText());
                         anchor.TooltipText = GetDisplayTooltip();
                         Config.Data[Name] = content;
                     };
-
+                    onLoad?.Invoke();
                 }
             };
             configFile.Entries.Add(this);
@@ -97,6 +100,22 @@ namespace SpawnControlModNS
             Config.Data[Name] = content = defaultValue;
             anchor.TextMeshPro.text = GetDisplayText();
             anchor.TooltipText = GetDisplayTooltip();
+        }
+
+        public void Update()
+        {
+            anchor.TextMeshPro.text = SizeText(FontSize, GetDisplayText());
+            anchor.TooltipText = GetDisplayTooltip();
+        }
+
+        public void Enable(bool enabled)
+        {
+            if (anchor != null && anchor.enabled != enabled)
+            {
+                anchor.enabled = enabled;
+                anchor.TextMeshPro.text = SizeText(FontSize, GetDisplayText());
+                anchor.TooltipText = GetDisplayTooltip();
+            }
         }
     }
 }
