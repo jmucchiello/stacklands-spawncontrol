@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>ExampleMod</AssemblyName>
+    <AssemblyName>SpawnControlMod</AssemblyName>
     <TargetFramework>netstandard2.1</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>warnings</Nullable>
     <LangVersion>latest</LangVersion>
+    <RootNamespace>SpawnControlModNS</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,1 +1,30 @@
 Term	Notes	English
+spawncontrolmod_config_UpperLeft		Upper Left Corner Only
+spawncontrolmod_config_LowerLeft		Lower Left Corner Only
+spawncontrolmod_config_UpperRight		Upper Right Corner Only
+spawncontrolmod_config_LowerRight		Lower Right Corner Only
+spawncontrolmod_config_Center		Center of the Board
+spawncontrolmod_config_Anywhere		Anywhere on the Board *
+spawncontrolmod_config_anchor		Summoned Enemies Will Appear: 
+spawncontrolmod_config_anchor_tooltip		Click to change setting
+spawncontrolmod_config_menu_text		Spawned Enemies Location
+spawncontrolmod_config_menu_tooltip		Summoned items only apply to Portals, Pirate Ships, Traveling Cart, etc.
+spawncontrolmod_closemenu		Close Menu
+spawncontrolmod_reset_defaults		Reset Defaults
+spawncontrolmod_reset_defaults_tooltip		Sets all frequencies to Normal and spawn location to Anywhere on the Board.
+spawncontrolmod_rareportals		Allow rare portals to spawn
+spawncontrolmod_rareportals_tooltip		When disallowed, only normal portals will spawn.
+spawncontrolmod_freq_portal		Frequency of Strange Portals
+spawncontrolmod_freq_portal_tooltip		Strange Portals usually spawn every fourth moon, starting on the ninth moon
+spawncontrolmod_freq_rare		Frequency of Rare Portals
+spawncontrolmod_freq_rare_tooltip		Rare Portals normally replace every fourth Stange Portal.
+spawncontrolmod_freq_pirates		Frequency of Pirate Ship
+spawncontrolmod_freq_pirates_tooltip		Pirate Ships usually spawn every seventh moon.
+spawncontrolmod_freq_cart		Frequency of Travelling Carts
+spawncontrolmod_freq_cart_tooltip		Travelling Cart is only spawned on even moons, usually 10% of#the time, starting with the tenth moon.
+spawncontrolmod_freq_NEVER		Never
+spawncontrolmod_freq_SLOWER		Less Frequent
+spawncontrolmod_freq_NORMAL		Normal Frequency *
+spawncontrolmod_freq_QUICKER		More Frequent
+spawncontrolmod_freq_ALWAYS		Every Moon
+spawncontrolmod_freq_ALWAYS_cart		Every Even Moon
