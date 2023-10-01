@@ -45,24 +45,24 @@ namespace SpawnControlModNS
             currentValueColor = Color.blue;
             onDisplayAnchorText = delegate ()
             {
-                return I.Xlat("spawncontrolmod_config_anchor") + " " + ColorText(currentValueColor, I.Xlat($"spawncontrolmod_config_{(SpawnSites)Value}"));
+                return I.Xlat("spawncontrolmod_location_anchor") + " " + ColorText(currentValueColor, I.Xlat($"spawncontrolmod_location_{(SpawnSites)Value}"));
             };
             onDisplayAnchorTooltip = delegate ()
             {
-                return I.Xlat("spawncontrolmod_config_anchor_tooltip");
+                return I.Xlat("spawncontrolmod_location_anchor_tooltip");
             };
             onDisplayEnumText = delegate (SpawnSites s)
             {
-                return I.Xlat($"spawncontrolmod_config_{s}");
+                return I.Xlat($"spawncontrolmod_location_{s}");
             };
             onDisplayEnumTooltip = delegate (SpawnSites s)
             {
-                SokTerm term = SokLoc.instance.CurrentLocSet.GetTerm($"spawncontrolmod_config_tooltip_{s}");
+                SokTerm term = SokLoc.instance.CurrentLocSet.GetTerm($"spawncontrolmod_location_tooltip_{s}");
                 if (term == null) return null;
-                return I.Xlat($"spawncontrolmod_config_tooltip_{s}");
+                return I.Xlat($"spawncontrolmod_location_tooltip_{s}");
             };
-            popupMenuTitleText = "spawncontrolmod_config_menu_text";
-            popupMenuHelpText = "spawncontrolmod_config_menu_tooltip";
+            popupMenuTitleText = "spawncontrolmod_location_menu_text";
+            popupMenuHelpText = "spawncontrolmod_location_menu_tooltip";
 
             CloseButtonTextTerm = "spawncontrolmod_closemenu";
         }

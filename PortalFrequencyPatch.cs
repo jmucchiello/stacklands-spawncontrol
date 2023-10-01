@@ -9,7 +9,7 @@ namespace SpawnControlModNS
         void ApplyFrequencies()
         {
             int[] divisors = new int[] { 1000000, 6, 4, 3, 1 };
-            int[] pirate_divisors = new int[] { 1000000, 15, 7, 3, 1 };
+            int[] pirate_divisors = new int[] { 1000000, 12, 7, 3, 1 };
             float[] cart_thresholds = new float[] { -1f, 0.04f, 0.1f, 0.25f, 1f };
 
             SpecialEvents_Patch.PortalDivisor = divisors[(int)configPortals.Value];
@@ -68,7 +68,7 @@ namespace SpawnControlModNS
                     .ThrowIfNotMatch("Can't find portal divisor")
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "FrequencyOfTravellingCart"))
                     .MatchStartForward(
-                        new CodeMatch(OpCodes.Ldc_I4, 19)
+                        new CodeMatch(OpCodes.Ldc_I4_S, (sbyte)19) // don't ask me why it's (sbyte)
                     )
                     .ThrowIfNotMatch("Can't find travelling cart month = 19")
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "MoonIs19"))
@@ -99,7 +99,7 @@ namespace SpawnControlModNS
                     .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "RarePortalDivisor"))
                     .InstructionEnumeration()
                     .ToList();
-                result.ForEach(instruction => SpawnControlMod.Log($"{instruction}"));
+//                result.ForEach(instruction => SpawnControlMod.Log($"{instruction}"));
                 SpawnControlMod.Log($"Exiting Instructions in {instructions.Count()}, instructions out {result.Count()}");
                 return result;
             }

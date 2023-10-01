@@ -1,19 +1,17 @@
 Term	Notes	English
-spawncontrolmod_config_UpperLeft		Upper Left Corner Only
-spawncontrolmod_config_LowerLeft		Lower Left Corner Only
-spawncontrolmod_config_UpperRight		Upper Right Corner Only
-spawncontrolmod_config_LowerRight		Lower Right Corner Only
-spawncontrolmod_config_Center		Center of the Board
-spawncontrolmod_config_Anywhere		Anywhere on the Board *
-spawncontrolmod_config_anchor		Summoned Enemies Will Appear: 
-spawncontrolmod_config_anchor_tooltip		Click to change setting
-spawncontrolmod_config_menu_text		Spawned Enemies Location
-spawncontrolmod_config_menu_tooltip		Summoned items only apply to Portals, Pirate Ships, Traveling Cart, etc.
+spawncontrolmod_location_UpperLeft		Upper Left Corner Only
+spawncontrolmod_location_LowerLeft		Lower Left Corner Only
+spawncontrolmod_location_UpperRight		Upper Right Corner Only
+spawncontrolmod_location_LowerRight		Lower Right Corner Only
+spawncontrolmod_location_Center		Center of the Board
+spawncontrolmod_location_Anywhere		Anywhere on the Board *
+spawncontrolmod_location_anchor		Summoned Enemies Will Appear: 
+spawncontrolmod_location_anchor_tooltip		Click to change setting
+spawncontrolmod_location_menu_text		Spawned Enemies Location
+spawncontrolmod_location_menu_tooltip		Summoned items applies to Portals, Pirate Ships, Traveling Cart, etc. and anything spawned from them.
 spawncontrolmod_closemenu		Close Menu
 spawncontrolmod_reset_defaults		Reset Defaults
 spawncontrolmod_reset_defaults_tooltip		Sets all frequencies to Normal and spawn location to Anywhere on the Board.
-spawncontrolmod_rareportals		Allow rare portals to spawn
-spawncontrolmod_rareportals_tooltip		When disallowed, only normal portals will spawn.
 spawncontrolmod_freq_portal		Frequency of Strange Portals
 spawncontrolmod_freq_portal_tooltip		Strange Portals usually spawn every fourth moon, starting on the ninth moon
 spawncontrolmod_freq_rare		Frequency of Rare Portals

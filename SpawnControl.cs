@@ -21,6 +21,11 @@ namespace SpawnControlModNS
         private void Awake()
         {
             instance = this;
+            Harmony.PatchAll();
+        }
+
+        private void SetupConfig()
+        {
             configSpawnSites = new ConfigSpawnSites("spawncontrolmod_spawning", Config, SpawnSites.Anywhere);
 
             configPortals = NewToggle("spawncontrolmod_freq_portal");
@@ -39,10 +44,14 @@ namespace SpawnControlModNS
             };
             Config.OnSave = () =>
             {
-                ApplySpawnSites();
-                ApplyFrequencies();
+                ApplyConfig();
             };
-            Harmony.PatchAll();
+        }
+
+        private void ApplyConfig()
+        {
+            ApplySpawnSites();
+            ApplyFrequencies();
         }
 
         private ConfigToggledEnum<FrequencyStates> NewToggle(string name)
@@ -80,8 +89,7 @@ namespace SpawnControlModNS
         public override void Ready()
         {
             instance = this;
-            ApplySpawnSites();
-            ApplyFrequencies();
+            ApplyConfig();
             Log("Ready!");
         }
 
@@ -89,8 +97,7 @@ namespace SpawnControlModNS
         [HarmonyPostfix]
         static void WorldManager_LoadSaveRound(WorldManager __instance, SaveRound saveRound)
         {
-            instance.ApplySpawnSites();
-            instance.ApplyFrequencies();
+            instance.ApplyConfig();
         }
     }
 }
