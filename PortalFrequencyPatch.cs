@@ -21,6 +21,11 @@ namespace SpawnControlModNS
             Log($"Portal Divisor '{SpecialEvents_Patch.PortalDivisor}', Rare Divisor '{SpecialEvents_Patch.RarePortalDivisor}'," 
               + $"Pirate Divisor '{SpecialEvents_Patch.PirateDivisor}', Travelling Cart '{SpecialEvents_Patch.FrequencyOfTravellingCart:0.00}', MoonIs19 '{SpecialEvents_Patch.MoonIs19}'");
         }
+
+        public void SetSadnessDivisor(int value)
+        {
+            SpecialEvents_Patch.SadEventDivisor = Math.Clamp(value, 1, 8);
+        }
     }
 
     [HarmonyPatch]
