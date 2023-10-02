@@ -24,6 +24,6 @@ This mod is part of my serious of mods that allow you to control the difficulty 
 
 * [Strict Mode](https://steamcommunity.com/sharedfiles/filedetails/?id=3026405806)
 * Spawn Control (this mod)
-* Enemy Difficulty (coming soon)
+* [Enemy Difficulty](https://steamcommunity.com/sharedfiles/filedetails/?id=3044524742)
 * DLC Difficulty (coming soon)
-* Peaceful Mode Toggle (coming soon)
+* Peaceful Mode Toggle (coming later)
