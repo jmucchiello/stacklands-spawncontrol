@@ -26,3 +26,5 @@ spawncontrolmod_freq_NORMAL		Normal Frequency *
 spawncontrolmod_freq_QUICKER		More Frequent
 spawncontrolmod_freq_ALWAYS		Every Moon
 spawncontrolmod_freq_ALWAYS_cart		Every Odd Numbered Moon
+spawncontrolmod_roaming		Allow Animals to Roam
+spawncontrolmod_notify		Spawn Control Mod

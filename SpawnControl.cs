@@ -1,23 +1,30 @@
 ﻿using HarmonyLib;
+using Shapes;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Random;
 
 namespace SpawnControlModNS
 {
     public enum FrequencyStates { NEVER, SLOWER, NORMAL, QUICKER, ALWAYS }
 
+
+    [HarmonyPatch]
     public partial class SpawnControlMod : Mod
     {
         public static SpawnControlMod instance;
         public static void Log(string msg) => instance?.Logger.Log(msg);
         public static void LogError(string msg) => instance?.Logger.LogError(msg);
 
+        public static bool AllowAnimalsToRoam => instance?.configAnimalRoam.Value ?? true;
+
         public ConfigToggledEnum<FrequencyStates> configPortals;
         public ConfigToggledEnum<FrequencyStates> configRarePortals;
         public ConfigToggledEnum<FrequencyStates> configPirates;
         public ConfigToggledEnum<FrequencyStates> configCart;
+        public ConfigEntry<bool> configAnimalRoam;
 
         private void Awake()
         {
@@ -58,6 +65,8 @@ namespace SpawnControlModNS
                 configRarePortals.Enable(configPortals.Value != FrequencyStates.NEVER);
                 configRarePortals.Update();
             };
+
+            configAnimalRoam = new ConfigEntry<bool>("spawncontrolmod_roaming", Config, true);
 
             ConfigFreeText configResetDefaults = new("none", Config, "spawncontrolmod_reset_defaults", "spawncontrolmod_reset_defaults_tooltip");
             configResetDefaults.Clicked += delegate (ConfigEntryBase _, CustomButton _)
@@ -124,6 +133,19 @@ namespace SpawnControlModNS
         static void WorldManager_LoadSaveRound(WorldManager __instance, SaveRound saveRound)
         {
             instance.ApplyConfig();
+            I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"),
+                                 I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")));
+        }
+
+        public class RangeFreeAnimals
+        {
+            [HarmonyPrefix]
+            [HarmonyPatch(typeof(Animal), "Move")]
+            static bool Prefix()
+            {
+                Log($"Animal Roam {SpawnControlMod.AllowAnimalsToRoam}");
+                return SpawnControlMod.AllowAnimalsToRoam;
+            }
         }
     }
 }
