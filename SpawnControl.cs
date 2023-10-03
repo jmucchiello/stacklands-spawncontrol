@@ -66,7 +66,10 @@ namespace SpawnControlModNS
                 configRarePortals.Update();
             };
 
-            configAnimalRoam = new ConfigEntry<bool>("spawncontrolmod_roaming", Config, true);
+            configAnimalRoam = new ConfigEntry<bool>("spawncontrolmod_roaming", Config, true, new ConfigUI()
+            {
+                NameTerm = "spawncontrolmod_roaming"
+            });
 
             ConfigFreeText configResetDefaults = new("none", Config, "spawncontrolmod_reset_defaults", "spawncontrolmod_reset_defaults_tooltip");
             configResetDefaults.Clicked += delegate (ConfigEntryBase _, CustomButton _)
@@ -137,15 +140,15 @@ namespace SpawnControlModNS
                                  I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")));
         }
 
-        public class RangeFreeAnimals
+    }
+
+    [HarmonyPatch(typeof(Animal), "Move")]
+    public class RangeFreeAnimals
+    {
+        static bool Prefix()
         {
-            [HarmonyPrefix]
-            [HarmonyPatch(typeof(Animal), "Move")]
-            static bool Prefix()
-            {
-                Log($"Animal Roam {SpawnControlMod.AllowAnimalsToRoam}");
-                return SpawnControlMod.AllowAnimalsToRoam;
-            }
+            SpawnControlMod.Log($"Animal Roam {SpawnControlMod.AllowAnimalsToRoam}");
+            return SpawnControlMod.AllowAnimalsToRoam;
         }
     }
 }
