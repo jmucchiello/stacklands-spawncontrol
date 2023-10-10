@@ -1,10 +1,6 @@
-﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace SpawnControlModNS
+namespace CommonModNS
 {
     public class ConfigToggledEnum<T> : ConfigEntryHelper where T : Enum
     {

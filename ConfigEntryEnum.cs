@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SpawnControlModNS
+namespace CommonModNS
 {
     public class ConfigEntryEnum<T> : ConfigEntryModalHelper where T : Enum
     {

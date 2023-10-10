@@ -3,21 +3,29 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using CommonModNS;
 
-namespace SpawnControlModNS
+namespace CommonModNS
 {
+    public enum TextAlign { Left, Center, Right }
+
     public abstract class ConfigEntryHelper : ConfigEntryBase
     {
         public virtual void SetDefaults() { }
 
+        public static string AlignText(TextAlign align, string txt)
+        {
+            return $"<align={align.ToString().ToLower()}>{txt}</align>";
+        }
+
         public static string CenterAlign(string txt)
         {
-            return "<align=center>" + txt + "</align>";
+            return AlignText(TextAlign.Center, txt);
         }
 
         public static string RightAlign(string txt)
         {
-            return "<align=right>" + txt + "</align>";
+            return AlignText(TextAlign.Right, txt);
         }
 
         public static string ColorText(string color, string txt)
