@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Random;
+using CommonModNS;
 
 namespace SpawnControlModNS
 {
@@ -19,16 +20,20 @@ namespace SpawnControlModNS
         public static void LogError(string msg) => instance?.Logger.LogError(msg);
 
         public static bool AllowAnimalsToRoam => instance?.configAnimalRoam.Value ?? true;
+        public static bool AllowEnemyDrags => instance?.configDraggableMobs.Value ?? false;
 
         public ConfigToggledEnum<FrequencyStates> configPortals;
         public ConfigToggledEnum<FrequencyStates> configRarePortals;
         public ConfigToggledEnum<FrequencyStates> configPirates;
         public ConfigToggledEnum<FrequencyStates> configCart;
-        public ConfigEntry<bool> configAnimalRoam;
+        public ConfigEntryBool configAnimalRoam;
+        public ConfigEntryBool configDraggableMobs;
 
         private void Awake()
         {
             instance = this;
+            WorldManagerPatches.Play += WM_Play;
+            WorldManagerPatches.ApplyPatches(Harmony);
             SetupConfig();
             Harmony.PatchAll();
         }
@@ -66,11 +71,20 @@ namespace SpawnControlModNS
                 configRarePortals.Update();
             };
 
-            configAnimalRoam = new ConfigEntry<bool>("spawncontrolmod_roaming", Config, true, new ConfigUI()
+            configAnimalRoam = new ConfigEntryBool("spawncontrolmod_roaming", Config, true, new ConfigUI()
             {
                 NameTerm = "spawncontrolmod_roaming"
-            });
+            })
+            {
+                currentValueColor = Color.blue
+            };
 
+            configDraggableMobs = new ConfigEntryBool("spawncontrolmod_dragmobs", Config, false, new ConfigUI()
+            {
+                NameTerm = "spawncontrolmod_dragmobs"
+            }){
+                currentValueColor = Color.blue
+            };
             ConfigFreeText configResetDefaults = new("none", Config, "spawncontrolmod_reset_defaults", "spawncontrolmod_reset_defaults_tooltip");
             configResetDefaults.Clicked += delegate (ConfigEntryBase _, CustomButton _)
             {
@@ -100,23 +114,13 @@ namespace SpawnControlModNS
             {
                 return I.Xlat(name);
             };
-            if (name.Contains("cart"))
+            toggle.onDisplayEnumText = (FrequencyStates state) =>
             {
-                toggle.onDisplayEnumText = (FrequencyStates state) =>
-                {
-                    string term = $"spawncontrolmod_freq_{state}";
-                    if (state == FrequencyStates.ALWAYS)
-                        term += "_cart";
-                    return I.Xlat(term);
-                };
-            }
-            else
-            {
-                toggle.onDisplayEnumText = (FrequencyStates state) =>
-                {
-                    return I.Xlat($"spawncontrolmod_freq_{state}");
-                };
-            }
+                string term = $"spawncontrolmod_freq_{state}";
+                if (name.Contains("cart") && state == FrequencyStates.ALWAYS)
+                    term += "_cart";
+                return I.Xlat(term);
+            };
             toggle.onDisplayTooltip = () =>
             {
                 return I.Xlat($"{name}_tooltip");
@@ -126,14 +130,11 @@ namespace SpawnControlModNS
 
         public override void Ready()
         {
-            instance = this;
             ApplyConfig();
             Log("Ready!");
         }
 
-        [HarmonyPatch(typeof(WorldManager), nameof(WorldManager.LoadSaveRound))]
-        [HarmonyPostfix]
-        static void WorldManager_LoadSaveRound(WorldManager __instance, SaveRound saveRound)
+        static void WM_Play(WorldManager _)
         {
             instance.ApplyConfig();
             I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"),
@@ -145,10 +146,38 @@ namespace SpawnControlModNS
     [HarmonyPatch(typeof(Animal), "Move")]
     public class RangeFreeAnimals
     {
-        static bool Prefix()
+        static bool Prefix(Animal __instance)
         {
-            SpawnControlMod.Log($"Animal Roam {SpawnControlMod.AllowAnimalsToRoam}");
-            return SpawnControlMod.AllowAnimalsToRoam;
+            //I.Log($"Animal Roam {SpawnControlMod.AllowAnimalsToRoam}");
+            return SpawnControlMod.AllowAnimalsToRoam || __instance.Id == Cards.eel;
+        }
+    }
+
+    [HarmonyPatch(typeof(Animal), "CanHaveCard")]
+    public class AnimalCanHaveEnemy
+    {
+        static bool Prefix(Animal __instance, ref bool __result, CardData otherCard)
+        {
+            if (otherCard is Enemy)
+            {
+                __result = false;
+                return false;
+            }
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Mob), "CanBeDragged", MethodType.Getter)]
+    public class MobsCanBeDragged
+    {
+        static void Postfix(Mob __instance, ref bool __result)
+        {
+            if (SpawnControlMod.AllowEnemyDrags && __instance is Enemy)
+            {
+                if (__instance.MyGameCard.BeingDragged && __instance.MyGameCard.InventoryVisible)
+                    __instance.MyGameCard.OpenInventory(false);
+                __result = true;
+            }
         }
     }
 }
