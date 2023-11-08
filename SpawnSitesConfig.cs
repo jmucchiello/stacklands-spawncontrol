@@ -1,9 +1,8 @@
 ﻿using CommonModNS;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
+using Rand = UnityEngine.Random;
+using static CommonModNS.I;
 
 namespace SpawnControlModNS
 {
@@ -11,8 +10,8 @@ namespace SpawnControlModNS
     {
         public ConfigSpawnSites configSpawnSites;
 
-        public float Xconfine => UnityEngine.Random.Range(lowX, highX);
-        public float Zconfine => UnityEngine.Random.Range(lowZ, highZ);
+        public float Xconfine => Rand.Range(lowX, highX);
+        public float Zconfine => Rand.Range(lowZ, highZ);
 
         private float lowX = 0f, highX = 1f;
         private float lowZ = 0f, highZ = 1f;

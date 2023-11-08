@@ -1,10 +1,5 @@
 ﻿using HarmonyLib;
-using Shapes;
-using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.Random;
 using CommonModNS;
 
 namespace SpawnControlModNS
@@ -108,22 +103,18 @@ namespace SpawnControlModNS
 
         private ConfigToggledEnum<FrequencyStates> NewToggle(string name)
         {
-            ConfigToggledEnum<FrequencyStates> toggle = new ConfigToggledEnum<FrequencyStates>(name, Config, FrequencyStates.NORMAL);
-            toggle.currentValueColor = Color.blue;
-            toggle.onDisplayText = () =>
+            ConfigToggledEnum<FrequencyStates> toggle = new ConfigToggledEnum<FrequencyStates>(name, Config, FrequencyStates.NORMAL, new ConfigUI()
             {
-                return I.Xlat(name);
-            };
+                NameTerm = name,
+                TooltipTerm = name + "_tooltip"
+            });
+            toggle.currentValueColor = Color.blue;
             toggle.onDisplayEnumText = (FrequencyStates state) =>
             {
                 string term = $"spawncontrolmod_freq_{state}";
                 if (name.Contains("cart") && state == FrequencyStates.ALWAYS)
                     term += "_cart";
                 return I.Xlat(term);
-            };
-            toggle.onDisplayTooltip = () =>
-            {
-                return I.Xlat($"{name}_tooltip");
             };
             return toggle;
         }
