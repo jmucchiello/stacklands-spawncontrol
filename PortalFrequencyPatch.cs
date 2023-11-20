@@ -13,9 +13,9 @@ namespace SpawnControlModNS
             int[] pirate_divisors = new int[] { 1000000, 12, 7, 3, 1 };
             float[] cart_thresholds = new float[] { -1f, 0.04f, 0.1f, 0.25f, 1f };
 
-            SpecialEvents_Patch.PortalDivisor = divisors[(int)configPortals.Value];
-            SpecialEvents_Patch.RarePortalDivisor = divisors[(int)configRarePortals.Value];
-            SpecialEvents_Patch.PirateDivisor = pirate_divisors[(int)configPirates.Value];
+            SpecialEvents_Patch.PortalDivisor = divisors[(int)configDanger.Value];
+            SpecialEvents_Patch.RarePortalDivisor = divisors[(int)configDanger.Value];
+            SpecialEvents_Patch.PirateDivisor = pirate_divisors[(int)configDanger.Value];
             SpecialEvents_Patch.FrequencyOfTravellingCart = cart_thresholds[(int)configCart.Value];
             SpecialEvents_Patch.MoonIs19 = configCart.Value == FrequencyStates.NEVER ? -1 : 19;
 

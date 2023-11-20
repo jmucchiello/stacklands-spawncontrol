@@ -5,7 +5,7 @@ using CommonModNS;
 namespace SpawnControlModNS
 {
     public enum FrequencyStates { NEVER, SLOWER, NORMAL, QUICKER, ALWAYS }
-
+    public enum RarePortals { NEVER, NORMAL, ALWAYS }
 
     [HarmonyPatch]
     public partial class SpawnControlMod : Mod
@@ -17,9 +17,8 @@ namespace SpawnControlModNS
         public static bool AllowAnimalsToRoam => instance?.configAnimalRoam.Value ?? true;
         public static bool AllowEnemyDrags => instance?.configDraggableMobs.Value ?? false;
 
-        public ConfigToggledEnum<FrequencyStates> configPortals;
-        public ConfigToggledEnum<FrequencyStates> configRarePortals;
-        public ConfigToggledEnum<FrequencyStates> configPirates;
+        public ConfigToggledEnum<FrequencyStates> configDanger;
+        public ConfigToggledEnum<RarePortals> configRare;
         public ConfigToggledEnum<FrequencyStates> configCart;
         public ConfigEntryBool configAnimalRoam;
         public ConfigEntryBool configDraggableMobs;
@@ -37,34 +36,9 @@ namespace SpawnControlModNS
         {
             configSpawnSites = new ConfigSpawnSites("spawncontrolmod_spawning", Config, SpawnSites.Anywhere);
 
-            configPortals = NewToggle("spawncontrolmod_freq_portal");
-            configRarePortals = NewToggle("spawncontrolmod_freq_rare");
-            configPirates = NewToggle("spawncontrolmod_freq_pirates");
+            configDanger = NewToggle("spawncontrolmod_freq_danger");
+            configRare = NewToggle("")
             configCart = NewToggle("spawncontrolmod_freq_cart");
-            configPortals.onChange = delegate (FrequencyStates value)
-            {
-                configRarePortals.Enable(value != FrequencyStates.NEVER);
-                return true;
-            };
-            configRarePortals.onDisplayText = () =>
-            {
-                string s = I.Xlat(configRarePortals.Name);
-                if (configPortals.Value == FrequencyStates.NEVER)
-                    s = "<s>" + s + "</s>";
-                return s;
-            };
-            configRarePortals.onDisplayEnumText = (FrequencyStates state) =>
-            {
-                string s = I.Xlat($"spawncontrolmod_freq_{state}");
-                if (configPortals.Value == FrequencyStates.NEVER)
-                    s = "<s>" + s + "</s>";
-                return s;
-            };
-            configRarePortals.onLoad = delegate ()
-            {
-                configRarePortals.Enable(configPortals.Value != FrequencyStates.NEVER);
-                configRarePortals.Update();
-            };
 
             configAnimalRoam = new ConfigEntryBool("spawncontrolmod_roaming", Config, true, new ConfigUI()
             {
@@ -84,10 +58,10 @@ namespace SpawnControlModNS
             configResetDefaults.Clicked += delegate (ConfigEntryBase _, CustomButton _)
             {
                 configSpawnSites.SetDefaults();
-                configPortals.SetDefaults();
-                configRarePortals.SetDefaults();
-                configPirates.SetDefaults();
+                configRare.SetDefaults();
                 configCart.SetDefaults();
+                configAnimalRoam.SetDefaults();
+                configDraggableMobs.SetDefaults();
             };
             Config.OnSave = () =>
             {
@@ -103,18 +77,19 @@ namespace SpawnControlModNS
 
         private ConfigToggledEnum<FrequencyStates> NewToggle(string name)
         {
-            ConfigToggledEnum<FrequencyStates> toggle = new ConfigToggledEnum<FrequencyStates>(name, Config, FrequencyStates.NORMAL, new ConfigUI()
+            ConfigToggledEnum<FrequencyStates> toggle = new(name, Config, FrequencyStates.NORMAL, new ConfigUI()
             {
                 NameTerm = name,
                 TooltipTerm = name + "_tooltip"
-            });
-            toggle.currentValueColor = Color.blue;
-            toggle.onDisplayEnumText = (FrequencyStates state) =>
-            {
-                string term = $"spawncontrolmod_freq_{state}";
-                if (name.Contains("cart") && state == FrequencyStates.ALWAYS)
-                    term += "_cart";
-                return I.Xlat(term);
+            }){
+                currentValueColor = Color.blue,
+                onDisplayEnumText = (FrequencyStates state) =>
+                {
+                    string term = $"spawncontrolmod_freq_{state}";
+                    if (name.Contains("cart") && state == FrequencyStates.ALWAYS)
+                        term += "_cart";
+                    return I.Xlat(term);
+                }
             };
             return toggle;
         }
@@ -171,4 +146,23 @@ namespace SpawnControlModNS
             }
         }
     }
+
+#if false
+    [HarmonyPatch(typeof(Crab),nameof(Crab.Die))]
+    internal class MommaCrab_Patch
+    {
+        public static int MommaCrabFrequency = 3;
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> result = new CodeMatcher(instructions)
+                .MatchStartForward(
+                    new CodeMatch(OpCodes.Ldc_I4_3)
+                )
+                .Set(OpCodes.Ldsfld, AccessTools.Field(typeof(MommaCrab_Patch), "MommaCrabFrequency"))
+                .InstructionEnumeration()
+                .ToList();
+            return result;
+        }
+    }
+#endif
 }
