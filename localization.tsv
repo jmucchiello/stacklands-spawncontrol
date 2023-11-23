@@ -6,12 +6,10 @@ spawncontrolmod_location_LowerRight		Lower Right Corner Only
 spawncontrolmod_location_Center		Center of the Board
 spawncontrolmod_location_Anywhere		Anywhere on the Board *
 spawncontrolmod_location_anchor		Summoned Enemies Will Appear: 
-spawncontrolmod_location_anchor_tooltip		Click to change setting
-spawncontrolmod_location_menu_text		Spawned Enemies Location
+spawncontrolmod_location_anchor_tooltip		Click to change setting. Tournament mode (below) does not affect this setting nor is it ever written to your save files.
+spawncontrolmod_location_menu_text		Summoned Enemies Location
 spawncontrolmod_location_menu_tooltip		Summoned items applies to Portals, Pirate Ships, Traveling Cart, etc. and anything spawned from them.
 spawncontrolmod_closemenu		Close Menu
-spawncontrolmod_reset_defaults		Reset Defaults
-spawncontrolmod_reset_defaults_tooltip		Sets all frequencies to Normal and spawn location to Anywhere on the Board.
 spawncontrolmod_freq_danger		Frequency of Dangerous Summons
 spawncontrolmod_freq_danger_tooltip		Strange Portals and Pirate Ships can come more or less often.
 spawncontrolmod_rare		Enable Rare Portals
@@ -28,5 +26,7 @@ spawncontrolmod_freq_QUICKER		More Frequent
 spawncontrolmod_freq_ALWAYS		Every Moon
 spawncontrolmod_freq_ALWAYS_cart		Every Odd Numbered Moon
 spawncontrolmod_roaming		Allow Animals to Roam
+spawncontrolmod_roaming_tooltip		An animal pen allows you to stack animals. This does not. It just stops them from moving around.
 spawncontrolmod_dragmobs		Allow Enemies to be moved
+spawncontrolmod_dragmobs_tooltip		Also allows Pirate Ships and Strange and Rare Portals to be moved.
 spawncontrolmod_notify		Spawn Control Mod

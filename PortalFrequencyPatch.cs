@@ -7,47 +7,68 @@ namespace SpawnControlModNS
 {
     public partial class SpawnControlMod : Mod
     {
-        void ApplyFrequencies()
+        private void ApplyFrequencies()
         {
-            int[] divisors = new int[] { 1000000, 6, 4, 3, 1 };
-            int[] pirate_divisors = new int[] { 1000000, 12, 7, 3, 1 };
-            float[] cart_thresholds = new float[] { -1f, 0.04f, 0.1f, 0.25f, 1f };
-
-            SpecialEvents_Patch.PortalDivisor = divisors[(int)configDanger.Value];
-            SpecialEvents_Patch.RarePortalDivisor = divisors[(int)configDanger.Value];
-            SpecialEvents_Patch.PirateDivisor = pirate_divisors[(int)configDanger.Value];
-            SpecialEvents_Patch.FrequencyOfTravellingCart = cart_thresholds[(int)configCart.Value];
-            SpecialEvents_Patch.MoonIs19 = configCart.Value == FrequencyStates.NEVER ? -1 : 19;
-
-            Log($"Portal Divisor '{SpecialEvents_Patch.PortalDivisor}', Rare Divisor '{SpecialEvents_Patch.RarePortalDivisor}'," 
-              + $"Pirate Divisor '{SpecialEvents_Patch.PirateDivisor}', Travelling Cart '{SpecialEvents_Patch.FrequencyOfTravellingCart:0.00}', MoonIs19 '{SpecialEvents_Patch.MoonIs19}'");
+            SpecialEvents_Patch.SetPortalValues(SummonsFrequency);
+            SpecialEvents_Patch.SetCartValues(CartFrequency);
         }
 
-        public void SetSadnessDivisor(int value)
+        public override object Call(params object[] args)
         {
-            SpecialEvents_Patch.SadEventDivisor = Math.Clamp(value, 1, 8);
+            if (args.Length > 1 && args[0].ToString() == "SetSadnessDivisor")
+            {
+                if (args[1] is int && (int)args[1] > 0)
+                    return SpecialEvents_Patch.SetSadnessValues((int)args[1]);
+            }
+            return null;
         }
     }
 
     [HarmonyPatch]
     public class SpecialEvents_Patch
     {
-        public static int PortalMinMonth = 8;
-        public static int PortalDivisor = 4;
-        public static int RarePortalDivisor = 4;
-        public static float FrequencyOfTravellingCart = 0.1f;
-        public static int PirateDivisor = 4;
-        public static int SadEventMinMonth = 4;
-        public static int SadEventDivisor = 4;
-        public static int MoonIs19 = 19;
+        public static void SetPortalValues(FrequencyStates state)
+        {
+            RarePortalDivisor = PortalDivisor = divisors[(int)state];
+            PortalMinMonth = PortalDivisor * 2;
+            PirateDivisor = pirate_divisors[(int)state];
+            I.Log($"Portal Divisor '{PortalDivisor}', Rare Divisor '{RarePortalDivisor}', Pirate Divisor '{PirateDivisor}'");
+        }
 
-        private static Type innerClass;
+        public static void SetCartValues(FrequencyStates state)
+        {
+            FrequencyOfTravellingCart = cart_thresholds[(int)state];
+            MoonIs19 = state == FrequencyStates.NEVER ? -1 : 19;
+            I.Log($"Travelling Cart Frequency '{FrequencyOfTravellingCart}', MoonIs19 '{MoonIs19}'");
+        }
+
+        public static int SetSadnessValues(int value)
+        {
+            if (value <= 0) value = 4;
+            SadEventMinMonth = SadEventDivisor = value;
+            I.Log($"Sadness Divisor '{SadEventDivisor}'");
+            return value;
+        }
+
+        private static readonly int[] divisors = [1000000, 6, 4, 3, 1];
+        private static readonly int[] pirate_divisors = [1000000, 12, 7, 3, 1];
+        private static readonly float[] cart_thresholds = [-1f, 0.04f, 0.1f, 0.25f, 1f];
+
+        private static int PortalMinMonth = 8;
+        private static int PortalDivisor = 4;
+        private static int RarePortalDivisor = 4;
+        private static int PirateDivisor = 4;
+        private static float FrequencyOfTravellingCart = 0.1f;
+        private static int MoonIs19 = 19;
+        private static int SadEventMinMonth = 4; // for use by Curse Worlds Mod
+        private static int SadEventDivisor = 4;
+
         public static MethodBase TargetMethod()
         {
-            innerClass = AccessTools.FirstInner(typeof(EndOfMonthCutscenes), t => t.Name.Contains("SpecialEvents"));
-            SpawnControlMod.Log(innerClass?.ToString() ?? "null");
-            MethodBase method = AccessTools.FirstMethod(innerClass, method => method.Name.Contains("MoveNext"));
-            SpawnControlMod.Log(method?.ToString() ?? "null");
+            Type InnerClass4EOMSpecialEvents = AccessTools.FirstInner(typeof(EndOfMonthCutscenes), t => t.Name.Contains("SpecialEvents"));
+            //SpawnControlMod.Log(InnerClass4EOMSpecialEvents?.ToString() ?? "null");
+            MethodBase method = AccessTools.FirstMethod(InnerClass4EOMSpecialEvents, method => method.Name.Contains("MoveNext"));
+            //SpawnControlMod.Log(method?.ToString() ?? "null");
             return method;
         }
 
@@ -63,7 +84,7 @@ namespace SpawnControlModNS
                         new CodeMatch(OpCodes.Ldc_I4_8)
                     )
                     .ThrowIfNotMatch("Can't find portal min month")
-//                    .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "PortalMinMonth"))
+                    .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "PortalMinMonth"))
                     .Advance(1)
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_I4_4)
@@ -94,12 +115,12 @@ namespace SpawnControlModNS
                     )
                     .ThrowIfNotMatch("Can't find happiness")
                     //        bool spawnSadEvent = WorldManager.instance.CurrentBoard.Id == "happiness" && CurrentMonth > 4 && CurrentMonth % 4 == 0;
-                    //        bool spawnSadEvent = WorldManager.instance.CurrentBoard.Id == "happiness" && CurrentMonth > 4 && CurrentMonth % SadEventDivisor == 0;
+                    //        bool spawnSadEvent = WorldManager.instance.CurrentBoard.Id == "happiness" && CurrentMonth > SadEventMinMonth && CurrentMonth % SadEventDivisor == 0;
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_I4_4)
                     )
                     .ThrowIfNotMatch("Can't find happiness min month")
-//                    .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "SadEventMinMonth"))
+                    .Set(OpCodes.Ldsfld, AccessTools.Field(myClass, "SadEventMinMonth"))
                     .Advance(1)
                     .MatchStartForward(
                         new CodeMatch(OpCodes.Ldc_I4_4)

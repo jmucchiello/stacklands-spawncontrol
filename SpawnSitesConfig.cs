@@ -27,8 +27,6 @@ namespace SpawnControlModNS
                 case SpawnSites.UpperLeft:  SpawnPosition_Patch.SetExtents(0.1f, 0.3f, 0.7f, 0.9f); break;
             }
         }
-
-        public string YesNo(bool b) { return b ? "Yes" : "No"; }
     }
 
     public class ConfigSpawnSites : ConfigEntryEnum<SpawnSites>
@@ -39,7 +37,7 @@ namespace SpawnControlModNS
             currentValueColor = Color.blue;
             onDisplayAnchorText = delegate ()
             {
-                return I.Xlat("spawncontrolmod_location_anchor") + " " + ColorText(currentValueColor, I.Xlat($"spawncontrolmod_location_{(SpawnSites)Value}"));
+                return SizeText(25, I.Xlat("spawncontrolmod_location_anchor") + " " + ColorText(currentValueColor, I.Xlat($"spawncontrolmod_location_{(SpawnSites)Value}")));
             };
             onDisplayAnchorTooltip = delegate ()
             {
@@ -67,14 +65,12 @@ namespace SpawnControlModNS
     {
         public static void SetExtents(float lx, float hx, float lz, float hz)
         {
-            lowX = lx;
-            highX = hx;
-            lowZ = lz;
-            highZ = hz;
+            lowX = lx; highX = hx;
+            lowZ = lz; highZ = hz;
             Log($"Spawn Location Ranges: X({lowX:F1} to {highX:F1}), Y({lowZ:F1} to {highZ:F1})");
         }
 
-        private static float lowX = 0f, highX = 1f, lowZ = 0f, highZ = 1f;
+        private static float lowX = 0.1f, highX = 0.9f, lowZ = 0.1f, highZ = 0.9f;
 
         static bool Prefix(WorldManager __instance, ref Vector3 __result)
         {

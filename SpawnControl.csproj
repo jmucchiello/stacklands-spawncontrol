@@ -17,6 +17,7 @@
     <Compile Include="..\stacklands-common\ConfigFreeText.cs" Link="Common\ConfigFreeText.cs" />
     <Compile Include="..\stacklands-common\ConfigToggledEnum.cs" Link="Common\ConfigToggledEnum.cs" />
     <Compile Include="..\stacklands-common\Instances.cs" Link="Common\Instances.cs" />
+    <Compile Include="..\stacklands-common\SaveHelper.cs" Link="Common\SaveHelper.cs" />
     <Compile Include="..\stacklands-common\WorldManagerPatches.cs" Link="Common\WorldManagerPatches.cs" />
   </ItemGroup>
 
@@ -85,5 +86,9 @@
 
   <ItemGroup>
     <Folder Include="Common\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\stacklands-common\CommonNS.tsv" Link="Common\CommonNS.tsv" />
   </ItemGroup>
 </Project>

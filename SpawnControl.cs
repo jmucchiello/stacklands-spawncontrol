@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 using CommonModNS;
+using UnityEngine.Playables;
 
 namespace SpawnControlModNS
 {
     public enum FrequencyStates { NEVER, SLOWER, NORMAL, QUICKER, ALWAYS }
-    public enum RarePortals { NEVER, NORMAL, ALWAYS }
 
     [HarmonyPatch]
     public partial class SpawnControlMod : Mod
@@ -14,22 +14,27 @@ namespace SpawnControlModNS
         public static void Log(string msg) => instance?.Logger.Log(msg);
         public static void LogError(string msg) => instance?.Logger.LogError(msg);
 
+        // these can be overridden by the save file
+        // so they are updated in Config.OnSave, WM_OnLoad, and in WM_OnNewRound
+        public static FrequencyStates SummonsFrequency { get; private set; }
+        public static FrequencyStates CartFrequency { get; private set; }
+
+        // these can't be overriden by the save file
         public static bool AllowAnimalsToRoam => instance?.configAnimalRoam.Value ?? true;
         public static bool AllowEnemyDrags => instance?.configDraggableMobs.Value ?? false;
 
-        public ConfigToggledEnum<FrequencyStates> configDanger;
-        public ConfigToggledEnum<RarePortals> configRare;
-        public ConfigToggledEnum<FrequencyStates> configCart;
-        public ConfigEntryBool configAnimalRoam;
-        public ConfigEntryBool configDraggableMobs;
+        private ConfigToggledEnum<FrequencyStates> configDanger;
+        private ConfigToggledEnum<FrequencyStates> configCart;
+        private ConfigEntryBool configAnimalRoam;
+        private ConfigEntryBool configDraggableMobs;
+        private ConfigTournament configTournament;
 
         private void Awake()
         {
             instance = this;
-            WorldManagerPatches.Play += WM_Play;
-            WorldManagerPatches.ApplyPatches(Harmony);
+            SavePatches();
             SetupConfig();
-            Harmony.PatchAll();
+            Harmony.PatchAll(); // patches are in Patches.cs
         }
 
         private void SetupConfig()
@@ -37,35 +42,41 @@ namespace SpawnControlModNS
             configSpawnSites = new ConfigSpawnSites("spawncontrolmod_spawning", Config, SpawnSites.Anywhere);
 
             configDanger = NewToggle("spawncontrolmod_freq_danger");
-            configRare = NewToggle("")
+//            configRare = NewToggle("");
             configCart = NewToggle("spawncontrolmod_freq_cart");
 
             configAnimalRoam = new ConfigEntryBool("spawncontrolmod_roaming", Config, true, new ConfigUI()
             {
                 NameTerm = "spawncontrolmod_roaming"
-            })
-            {
-                currentValueColor = Color.blue
+            } ) {
+                currentValueColor = Color.blue,
+                TextSize = 25
             };
 
             configDraggableMobs = new ConfigEntryBool("spawncontrolmod_dragmobs", Config, false, new ConfigUI()
             {
-                NameTerm = "spawncontrolmod_dragmobs"
-            }){
-                currentValueColor = Color.blue
+                NameTerm = "spawncontrolmod_dragmobs",
+                TooltipTerm = "spawncontrolmod_dragmobs_tooltip"
+            } ) {
+                currentValueColor = Color.blue,
+                TextSize = 25
             };
-            ConfigFreeText configResetDefaults = new("none", Config, "spawncontrolmod_reset_defaults", "spawncontrolmod_reset_defaults_tooltip");
-            configResetDefaults.Clicked += delegate (ConfigEntryBase _, CustomButton _)
+
+            configTournament = new ConfigTournament("spawncontrolmod_tournament", Config);
+
+            ConfigResetDefaults crd = new ConfigResetDefaults(Config, () =>
             {
                 configSpawnSites.SetDefaults();
-                configRare.SetDefaults();
+                configDanger.SetDefaults();
                 configCart.SetDefaults();
                 configAnimalRoam.SetDefaults();
                 configDraggableMobs.SetDefaults();
-            };
+            });
+
             Config.OnSave = () =>
             {
-                ApplyConfig();
+                SummonsFrequency = configDanger.Value;
+                CartFrequency = configCart.Value;
             };
         }
 
@@ -83,12 +94,14 @@ namespace SpawnControlModNS
                 TooltipTerm = name + "_tooltip"
             }){
                 currentValueColor = Color.blue,
-                onDisplayEnumText = (FrequencyStates state) =>
-                {
+                onDisplayText = () => {
+                    return ConfigEntryHelper.SizeText(25, I.Xlat(name));
+                },
+                onDisplayEnumText = (FrequencyStates state) => {
                     string term = $"spawncontrolmod_freq_{state}";
                     if (name.Contains("cart") && state == FrequencyStates.ALWAYS)
                         term += "_cart";
-                    return I.Xlat(term);
+                    return ConfigEntryHelper.SizeText(25, I.Xlat(term));
                 }
             };
             return toggle;
@@ -100,69 +113,90 @@ namespace SpawnControlModNS
             Log("Ready!");
         }
 
-        static void WM_Play(WorldManager _)
-        {
-            instance.ApplyConfig();
-            I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"),
-                                 I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")));
-        }
+        private SaveHelper saveHelper;
+        private SaveSettingsMode SaveMode;
 
-    }
-
-    [HarmonyPatch(typeof(Animal), "Move")]
-    public class RangeFreeAnimals
-    {
-        static bool Prefix(Animal __instance)
+        private void SavePatches()
         {
-            //I.Log($"Animal Roam {SpawnControlMod.AllowAnimalsToRoam}");
-            return SpawnControlMod.AllowAnimalsToRoam || __instance.Id == Cards.eel;
-        }
-    }
-
-    [HarmonyPatch(typeof(Animal), "CanHaveCard")]
-    public class AnimalCanHaveEnemy
-    {
-        static bool Prefix(Animal __instance, ref bool __result, CardData otherCard)
-        {
-            if (otherCard is Enemy)
+            saveHelper = new SaveHelper("SpawnControlMod")
             {
-                __result = false;
-                return false;
+                onGetSettings = delegate ()
+                {
+                    return SummonsFrequency.ToString() + " " + CartFrequency.ToString();
+                }
+            };
+            WorldManagerPatches.LoadSaveRound += WM_OnLoad;
+            WorldManagerPatches.GetSaveRound += WM_OnSave;
+            WorldManagerPatches.StartNewRound += WM_OnNewRound;
+            WorldManagerPatches.Play += WM_OnPlay;
+            WorldManagerPatches.ApplyPatches(Harmony);
+        }
+
+        private void WM_OnNewRound(WorldManager _)
+        {
+            SaveMode = configTournament.Value;
+            if (SaveMode == SaveSettingsMode.Disabled)
+            {
+                SummonsFrequency = FrequencyStates.NORMAL;
+                CartFrequency = FrequencyStates.NORMAL;
             }
-            return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(Mob), "CanBeDragged", MethodType.Getter)]
-    public class MobsCanBeDragged
-    {
-        static void Postfix(Mob __instance, ref bool __result)
-        {
-            if (SpawnControlMod.AllowEnemyDrags && __instance is Enemy)
+            else
             {
-                if (__instance.MyGameCard.BeingDragged && __instance.MyGameCard.InventoryVisible)
-                    __instance.MyGameCard.OpenInventory(false);
-                __result = true;
+                SummonsFrequency = configDanger.Value;
+                CartFrequency = configCart.Value;
             }
         }
-    }
 
-#if false
-    [HarmonyPatch(typeof(Crab),nameof(Crab.Die))]
-    internal class MommaCrab_Patch
-    {
-        public static int MommaCrabFrequency = 3;
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private void WM_OnSave(WorldManager _, SaveRound saveRound)
         {
-            List<CodeInstruction> result = new CodeMatcher(instructions)
-                .MatchStartForward(
-                    new CodeMatch(OpCodes.Ldc_I4_3)
-                )
-                .Set(OpCodes.Ldsfld, AccessTools.Field(typeof(MommaCrab_Patch), "MommaCrabFrequency"))
-                .InstructionEnumeration()
-                .ToList();
-            return result;
+            saveHelper.SaveData(saveRound, SaveMode);
+        }
+
+        private void WM_OnLoad(WorldManager _, SaveRound saveRound)
+        {
+            (SaveMode, string payload) = saveHelper.LoadData(saveRound);
+            if (SaveMode == SaveSettingsMode.Tournament)
+            {
+                string[] values = payload?.Split(' ') ?? new string[0];
+                if (values.Length == 2 &&
+                    Enum.TryParse<FrequencyStates>(values[0], out FrequencyStates summon) &&
+                    Enum.TryParse<FrequencyStates>(values[1], out FrequencyStates cart))
+                {
+                    SummonsFrequency = summon;
+                    CartFrequency = cart;
+                }
+                else
+                {
+                    SaveMode = SaveSettingsMode.Tampered;
+                    SummonsFrequency = configDanger.Value;
+                    CartFrequency = configCart.Value;
+                }
+            }
+            else if (SaveMode == SaveSettingsMode.Disabled)
+            {
+                SummonsFrequency = FrequencyStates.NORMAL;
+                CartFrequency = FrequencyStates.NORMAL;
+            }
+            else
+            {
+                SummonsFrequency = configDanger.Value;
+                CartFrequency = configCart.Value;
+            }
+        }
+
+        private void WM_OnPlay(WorldManager _)
+        {
+            ApplyConfig();
+            Notification();
+        }
+
+        private void Notification()
+        {
+            if (SaveMode != SaveSettingsMode.Disabled)
+            {
+                I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"),
+                                     I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")));
+            }
         }
     }
-#endif
 }
