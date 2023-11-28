@@ -34,7 +34,24 @@ namespace SpawnControlModNS
             instance = this;
             SavePatches();
             SetupConfig();
+            SetupRunopts();
             Harmony.PatchAll(); // patches are in Patches.cs
+        }
+
+        RunoptsEnum<FrequencyStates> runoptDanger;
+
+        private void SetupRunopts()
+        {
+            runoptDanger = new RunoptsEnum<FrequencyStates>("spawncontrolmod_danger", FrequencyStates.NORMAL)
+            {
+                NameTerm = "spawncontrolmod_danger",
+                TooltipTerm = "spawncontrolmod_danger_tooltip",
+                EnumTermPrefix = "spawncontrolmod_freq_",
+                FontColor = Color.blue,
+                FontSize = 20,
+                Value = configDanger.Value
+            };
+            HookRunOptions.ApplyPatch(Harmony);
         }
 
         private void SetupConfig()
@@ -50,7 +67,7 @@ namespace SpawnControlModNS
                 NameTerm = "spawncontrolmod_roaming"
             } ) {
                 currentValueColor = Color.blue,
-                TextSize = 25
+                FontSize = 25
             };
 
             configDraggableMobs = new ConfigEntryBool("spawncontrolmod_dragmobs", Config, false, new ConfigUI()
@@ -59,7 +76,7 @@ namespace SpawnControlModNS
                 TooltipTerm = "spawncontrolmod_dragmobs_tooltip"
             } ) {
                 currentValueColor = Color.blue,
-                TextSize = 25
+                FontSize = 25
             };
 
             configTournament = new ConfigTournament("spawncontrolmod_tournament", Config);
@@ -71,7 +88,9 @@ namespace SpawnControlModNS
                 configCart.SetDefaults();
                 configAnimalRoam.SetDefaults();
                 configDraggableMobs.SetDefaults();
-            });
+            } ) {
+                FontSize = 25
+            };
 
             Config.OnSave = () =>
             {
@@ -130,6 +149,7 @@ namespace SpawnControlModNS
             WorldManagerPatches.StartNewRound += WM_OnNewRound;
             WorldManagerPatches.Play += WM_OnPlay;
             WorldManagerPatches.ApplyPatches(Harmony);
+            saveHelper.Ready(Path);
         }
 
         private void WM_OnNewRound(WorldManager _)

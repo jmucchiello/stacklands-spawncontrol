@@ -30,3 +30,5 @@ spawncontrolmod_roaming_tooltip		An animal pen allows you to stack animals. This
 spawncontrolmod_dragmobs		Allow Enemies to be moved
 spawncontrolmod_dragmobs_tooltip		Also allows Pirate Ships and Strange and Rare Portals to be moved.
 spawncontrolmod_notify		Spawn Control Mod
+spawncontrolmod_danger		Frequency of Dangerous Summons#
+spawncontrolmod_danger_tooltip		Strange Portals and Pirate Ships can come more or less often.
