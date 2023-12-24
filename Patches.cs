@@ -43,6 +43,20 @@ namespace SpawnControlModNS
         }
     }
 
+    [HarmonyPatch(typeof(Mimic), "CanBeDragged", MethodType.Getter)]
+    public class MimicCanBeDragged
+    {
+        static void Postfix(Mimic __instance, ref bool __result)
+        {
+            if (SpawnControlMod.AllowEnemyDrags)
+            {
+                if (__instance.MyGameCard.BeingDragged && __instance.MyGameCard.InventoryVisible)
+                    __instance.MyGameCard.OpenInventory(false);
+                __result = true;
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(PirateBoat), "CanBeDragged", MethodType.Getter)]
     public class PirateBoatCanBeDragged
     {
