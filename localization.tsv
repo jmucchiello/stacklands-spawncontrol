@@ -5,18 +5,15 @@ spawncontrolmod_location_UpperRight		Upper Right Corner Only
 spawncontrolmod_location_LowerRight		Lower Right Corner Only
 spawncontrolmod_location_Center		Center of the Board
 spawncontrolmod_location_Anywhere		Anywhere on the Board *
-spawncontrolmod_location_anchor		Summoned Enemies Will Appear: 
-spawncontrolmod_location_anchor_tooltip		Click to change setting. Tournament mode (below) does not affect this setting nor is it ever written to your save files.
+spawncontrolmod_location_anchor		Summoned enemies will appear: 
+spawncontrolmod_location_anchor_tooltip		Click to change setting.
 spawncontrolmod_location_menu_text		Summoned Enemies Location
-spawncontrolmod_location_menu_tooltip		Summoned items applies to Portals, Pirate Ships, Traveling Cart, etc. and anything spawned from them.
+spawncontrolmod_location_menu_tooltip		Summoned items applies to Portals, Pirate Ships, and Traveling Carts.
 spawncontrolmod_closemenu		Close Menu
 spawncontrolmod_freq_danger		Frequency of Dangerous Summons
-spawncontrolmod_freq_danger_tooltip		Strange Portals and Pirate Ships can come more or less often.
-spawncontrolmod_rare		Enable Rare Portals
-spawncontrolmod_rare_tooltip		Every fourth Strange Portal is 50% stronger than normal.#You can disable them or make all portals "Rare" with this option.
-spawncontrolmod_rare_NEVER		Rare Portals never occur
-spawncontrolmod_rare_NORMAL		Rare Portals occur every fourth Strange Portal
-spawncontrolmod_rare_ALWAYS		All summoned portals are Rare Portals
+spawncontrolmod_freq_danger_tooltip		Affects how often Strange Portals and Pirate Ships appear.
+spawncontrolmod_rare		Allow Rare Portals to Occur
+spawncontrolmod_rare_tooltip		Every fourth Strange Portal is normally 50% stronger than normal.#This option allows you to makes all portals merely strange.
 spawncontrolmod_freq_cart		Frequency of Travelling Carts
 spawncontrolmod_freq_cart_tooltip		Travelling Cart is only spawned on odd moons, usually 10% of#the time, starting with the ninth moon.
 spawncontrolmod_freq_NEVER		Never
@@ -25,10 +22,9 @@ spawncontrolmod_freq_NORMAL		Normal Frequency *
 spawncontrolmod_freq_QUICKER		More Frequent
 spawncontrolmod_freq_ALWAYS		Every Moon
 spawncontrolmod_freq_ALWAYS_cart		Every Odd Numbered Moon
+spawncontrolmod_notify		Spawn Control Mod
+spawncontrolmod_notify_danger		Strange portals will appear: 
 spawncontrolmod_roaming		Allow Animals to Roam
 spawncontrolmod_roaming_tooltip		An animal pen allows you to stack animals. This does not. It just stops them from moving around.
-spawncontrolmod_dragmobs		Allow Enemies to be moved
-spawncontrolmod_dragmobs_tooltip		Also allows Pirate Ships and Strange and Rare Portals to be moved.
-spawncontrolmod_notify		Spawn Control Mod
-spawncontrolmod_danger		Frequency of Dangerous Summons#
-spawncontrolmod_danger_tooltip		Strange Portals and Pirate Ships can come more or less often.
+spawncontrolmod_notifications		Allow Notifications
+spawncontrolmod_notifications_tooltip		A courtesy notification reminds you where cards will#spawn when you start or continue a game. Turn this#off to disable that notification.

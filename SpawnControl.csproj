@@ -17,6 +17,7 @@
     <Compile Include="..\stacklands-common\ConfigFreeText.cs" Link="Common\ConfigFreeText.cs" />
     <Compile Include="..\stacklands-common\ConfigSlider.cs" Link="Common\ConfigSlider.cs" />
     <Compile Include="..\stacklands-common\ConfigToggledEnum.cs" Link="Common\ConfigToggledEnum.cs" />
+    <Compile Include="..\stacklands-common\GameOverScreen_Patch.cs" Link="Common\GameOverScreen_Patch.cs" />
     <Compile Include="..\stacklands-common\Instances.cs" Link="Common\Instances.cs" />
     <Compile Include="..\stacklands-common\RunoptsEnum.cs" Link="Common\RunoptsEnum.cs" />
     <Compile Include="..\stacklands-common\SaveHelper.cs" Link="Common\SaveHelper.cs" />

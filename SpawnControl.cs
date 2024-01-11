@@ -20,32 +20,46 @@ namespace SpawnControlModNS
         public static FrequencyStates CartFrequency { get; private set; }
 
         // these can't be overriden by the save file
+        public static bool AllowRarePortals => instance?.configRarePortals.Value ?? false;
         public static bool AllowAnimalsToRoam => instance?.configAnimalRoam.Value ?? true;
-        public static bool AllowEnemyDrags => instance?.configDraggableMobs.Value ?? false;
 
         private ConfigToggledEnum<FrequencyStates> configDanger;
         private ConfigToggledEnum<FrequencyStates> configCart;
+        private ConfigEntryBool configRarePortals;
         private ConfigEntryBool configAnimalRoam;
-        private ConfigEntryBool configDraggableMobs;
-        private ConfigTournament configTournament;
+
+        private RunoptsEnum<FrequencyStates> runoptDanger;
+
+        private SaveHelper saveHelper;
+        private SaveSettingsMode SaveMode;
+
+        private ConfigEntryBool configNotifications;
 
         private void Awake()
         {
             instance = this;
             SavePatches();
             SetupConfig();
+#if false
             SetupRunopts();
+            GameOverScreen_Patch.AddListener( () =>
+            {
+                if (SaveMode == SaveSettingsMode.Tournament)
+                {
+                    return I.Xlat("");
+                }
+                return "";
+            });
+#endif
             Harmony.PatchAll(); // patches are in Patches.cs
         }
 
-        RunoptsEnum<FrequencyStates> runoptDanger;
-
         private void SetupRunopts()
         {
-            runoptDanger = new RunoptsEnum<FrequencyStates>("spawncontrolmod_danger", FrequencyStates.NORMAL)
+            runoptDanger = new RunoptsEnum<FrequencyStates>("spawncontrolmod_freq_danger", FrequencyStates.NORMAL)
             {
-                NameTerm = "spawncontrolmod_danger",
-                TooltipTerm = "spawncontrolmod_danger_tooltip",
+                NameTerm = "spawncontrolmod_freq_danger",
+                TooltipTerm = "spawncontrolmod_freq_danger_tooltip",
                 EnumTermPrefix = "spawncontrolmod_freq_",
                 FontColor = Color.blue,
                 FontSize = 20,
@@ -59,48 +73,59 @@ namespace SpawnControlModNS
             configSpawnSites = new ConfigSpawnSites("spawncontrolmod_spawning", Config, SpawnSites.Anywhere);
 
             configDanger = NewToggle("spawncontrolmod_freq_danger");
-//            configRare = NewToggle("");
             configCart = NewToggle("spawncontrolmod_freq_cart");
+
+            configRarePortals = new ConfigEntryBool("spawncontrolmod_rareportals", Config, true, new ConfigUI()
+            {
+                NameTerm = "spawncontrolmod_rare",
+                TooltipTerm = "spawncontrolmod_rare_tooltip"
+            } ) {
+                currentValueColor = Color.blue,
+                FontSize = 25
+            };
 
             configAnimalRoam = new ConfigEntryBool("spawncontrolmod_roaming", Config, true, new ConfigUI()
             {
-                NameTerm = "spawncontrolmod_roaming"
-            } ) {
-                currentValueColor = Color.blue,
-                FontSize = 25
-            };
-
-            configDraggableMobs = new ConfigEntryBool("spawncontrolmod_dragmobs", Config, false, new ConfigUI()
+                NameTerm = "spawncontrolmod_roaming",
+                TooltipTerm = "spawncontrolmod_roaming_tooltip"
+            })
             {
-                NameTerm = "spawncontrolmod_dragmobs",
-                TooltipTerm = "spawncontrolmod_dragmobs_tooltip"
-            } ) {
                 currentValueColor = Color.blue,
                 FontSize = 25
             };
 
-            configTournament = new ConfigTournament("spawncontrolmod_tournament", Config);
+            configNotifications = new ConfigEntryBool("spawncontrolmod_notifications", Config, true, new ConfigUI()
+            {
+                NameTerm = "spawncontrolmod_notifications",
+                TooltipTerm = "spawncontrolmod_notifications_tooltip"
+            })
+            {
+                currentValueColor = Color.blue,
+                FontSize = 25
+            };
 
-            ConfigResetDefaults crd = new ConfigResetDefaults(Config, () =>
+
+            _ = new ConfigResetDefaults(Config, () =>
             {
                 configSpawnSites.SetDefaults();
                 configDanger.SetDefaults();
                 configCart.SetDefaults();
+                configRarePortals.SetDefaults();
                 configAnimalRoam.SetDefaults();
-                configDraggableMobs.SetDefaults();
             } ) {
                 FontSize = 25
             };
 
             Config.OnSave = () =>
             {
-                SummonsFrequency = configDanger.Value;
+                SummonsFrequency = /* runoptDanger.Value =*/ configDanger.Value;
                 CartFrequency = configCart.Value;
             };
         }
 
         private void ApplyConfig()
         {
+            Config.OnSave.Invoke();
             ApplySpawnSites();
             ApplyFrequencies();
         }
@@ -123,6 +148,7 @@ namespace SpawnControlModNS
                     return ConfigEntryHelper.SizeText(25, I.Xlat(term));
                 }
             };
+            Log($"Config {name} {toggle.Value}");
             return toggle;
         }
 
@@ -132,38 +158,32 @@ namespace SpawnControlModNS
             Log("Ready!");
         }
 
-        private SaveHelper saveHelper;
-        private SaveSettingsMode SaveMode;
-
         private void SavePatches()
         {
             saveHelper = new SaveHelper("SpawnControlMod")
             {
                 onGetSettings = delegate ()
                 {
-                    return SummonsFrequency.ToString() + " " + CartFrequency.ToString();
+                    return SummonsFrequency.ToString();
                 }
             };
-            WorldManagerPatches.LoadSaveRound += WM_OnLoad;
-            WorldManagerPatches.GetSaveRound += WM_OnSave;
-            WorldManagerPatches.StartNewRound += WM_OnNewRound;
+            //WorldManagerPatches.LoadSaveRound += WM_OnLoad;
+            //WorldManagerPatches.GetSaveRound += WM_OnSave;
+            //WorldManagerPatches.StartNewRound += WM_OnNewRound;
             WorldManagerPatches.Play += WM_OnPlay;
             WorldManagerPatches.ApplyPatches(Harmony);
-            saveHelper.Ready(Path);
+            //saveHelper.Ready(Path);
         }
 
         private void WM_OnNewRound(WorldManager _)
         {
-            SaveMode = configTournament.Value;
             if (SaveMode == SaveSettingsMode.Disabled)
             {
                 SummonsFrequency = FrequencyStates.NORMAL;
-                CartFrequency = FrequencyStates.NORMAL;
             }
             else
             {
-                SummonsFrequency = configDanger.Value;
-                CartFrequency = configCart.Value;
+                SummonsFrequency = runoptDanger.Value;
             }
         }
 
@@ -177,30 +197,23 @@ namespace SpawnControlModNS
             (SaveMode, string payload) = saveHelper.LoadData(saveRound);
             if (SaveMode == SaveSettingsMode.Tournament)
             {
-                string[] values = payload?.Split(' ') ?? new string[0];
-                if (values.Length == 2 &&
-                    Enum.TryParse<FrequencyStates>(values[0], out FrequencyStates summon) &&
-                    Enum.TryParse<FrequencyStates>(values[1], out FrequencyStates cart))
+                if (Enum.TryParse<FrequencyStates>(payload, out FrequencyStates summon))
                 {
                     SummonsFrequency = summon;
-                    CartFrequency = cart;
                 }
                 else
                 {
                     SaveMode = SaveSettingsMode.Tampered;
                     SummonsFrequency = configDanger.Value;
-                    CartFrequency = configCart.Value;
                 }
             }
             else if (SaveMode == SaveSettingsMode.Disabled)
             {
                 SummonsFrequency = FrequencyStates.NORMAL;
-                CartFrequency = FrequencyStates.NORMAL;
             }
             else
             {
                 SummonsFrequency = configDanger.Value;
-                CartFrequency = configCart.Value;
             }
         }
 
@@ -212,10 +225,14 @@ namespace SpawnControlModNS
 
         private void Notification()
         {
-            if (SaveMode != SaveSettingsMode.Disabled)
+            if (configNotifications.Value)// && SaveMode != SaveSettingsMode.Disabled)
             {
-                I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"),
-                                     I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")));
+                string text = I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")) + ".";
+                if (configDanger.Value != FrequencyStates.NORMAL) 
+                { 
+                    text += " " + I.Xlat("spawncontrolmod_notify_danger") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_freq_{instance.configDanger.Value}"));
+                }
+                I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"), text);
             }
         }
     }

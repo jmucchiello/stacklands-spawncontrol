@@ -9,7 +9,7 @@ namespace SpawnControlModNS
     {
         private void ApplyFrequencies()
         {
-            SpecialEvents_Patch.SetPortalValues(SummonsFrequency);
+            SpecialEvents_Patch.SetPortalValues(SummonsFrequency, AllowRarePortals);
             SpecialEvents_Patch.SetCartValues(CartFrequency);
         }
 
@@ -27,9 +27,10 @@ namespace SpawnControlModNS
     [HarmonyPatch]
     public class SpecialEvents_Patch
     {
-        public static void SetPortalValues(FrequencyStates state)
+        public static void SetPortalValues(FrequencyStates state, bool allowRarePortals)
         {
-            RarePortalDivisor = PortalDivisor = divisors[(int)state];
+            RarePortalDivisor = divisors[allowRarePortals ? (int)FrequencyStates.NORMAL : 0];
+            PortalDivisor = divisors[(int)state];
             PortalMinMonth = PortalDivisor * 2;
             PirateDivisor = pirate_divisors[(int)state];
             I.Log($"Portal Divisor '{PortalDivisor}', Rare Divisor '{RarePortalDivisor}', Pirate Divisor '{PirateDivisor}'");
