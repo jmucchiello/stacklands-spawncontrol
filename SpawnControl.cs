@@ -227,10 +227,10 @@ namespace SpawnControlModNS
         {
             if (configNotifications.Value)// && SaveMode != SaveSettingsMode.Disabled)
             {
-                string text = I.Xlat("spawncontrolmod_location_anchor") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")) + ".";
+                string text = I.Xlat("spawncontrolmod_location_anchor") + "\n" + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_location_{instance.configSpawnSites.Value}")) + ".";
                 if (configDanger.Value != FrequencyStates.NORMAL) 
                 { 
-                    text += " " + I.Xlat("spawncontrolmod_notify_danger") + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_freq_{instance.configDanger.Value}"));
+                    text += "\n" + I.Xlat("spawncontrolmod_notify_danger") + "\n" + ConfigEntryHelper.ColorText(Color.blue, I.Xlat($"spawncontrolmod_freq_{instance.configDanger.Value}"));
                 }
                 I.GS.AddNotification(I.Xlat("spawncontrolmod_notify"), text);
             }
