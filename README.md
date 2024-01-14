@@ -44,24 +44,3 @@ If you don't care to see this notification, turn it **OFF** here.
 1.0.0 Release
 
 [Github](https://github.com/jmucchiello/stacklands-spawncontrol)
-
-The origin of this mod was to make it possible to setup automation and not have a random portal mess it up. The *Spawn Location*
-and *Allow Animals to Roam* settings were the main way to accomplish this. The other settings were logical additions to the mod, I hope.
-
-## Future ideas
-* Eventually, I will make it possible to save the frequency information to the save file so you can have a play through where you can't change the frequency.
-* I've thought about changing the chances of enemies spawning from purple location cards. But haven't done that. Would that interest anyone?
-
-# Challenge Mods
-This mod is part of my series of mods that allow you to control the difficulty of the game. Try these other mods for increased control.
-
-* [Can't Stop](https://steamcommunity.com/sharedfiles/filedetails/?id=3047503037) - Want to Pause the game? You can't. (coming soon)
-* [Enemy Difficulty](https://steamcommunity.com/sharedfiles/filedetails/?id=3044524742) - Change the power of all spawned enemies. (coming soon)
-* [Spawned Enemies Control](https://steamcommunity.com/sharedfiles/filedetails/?id=3044203151) - Control the frequency and location of end of month events. (This Mod)
-* [Strict Mode](https://steamcommunity.com/sharedfiles/filedetails/?id=3026405806) - Can't use ideas you unless you've found the blueprint in the current save game. (Update coming soon)
-
-Future mods in this series:
-
-* Cursed Worlds Extras - Modify the difficulty of various aspects of the Spirit World DLC and other stuff. (coming later)
-* Peaceful Mode Toggle - Turn Peaceful Mode on and off without starting a new game. (coming later)
-* Timekeeper Mod - Keep track of how long you play the game in each save. What's the challenge? There isn't one. Combined with the above mods it can be used to time challenges. (coming sooner or later)
