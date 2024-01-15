@@ -44,3 +44,21 @@ If you don't care to see this notification, turn it **OFF** here.
 1.0.0 Release
 
 [Github](https://github.com/jmucchiello/stacklands-spawncontrol)
+
+# Future Stuff
+
+Like the [Strict Mode](https://steamcommunity.com/sharedfiles/filedetails/?id=3026405806) mod, eventually, I will have this mod hook
+into Start New Run and have the settings stored in the save file. I plan to do this with several mods to make community challenges
+with "bragging rights" verifyable.
+
+List of Mods that will make that possible, some day:
+
+* [Strict Mode](https://steamcommunity.com/sharedfiles/filedetails/?id=3026405806) - Can't perform a task until the blueprint for the task is found.
+* [Enemy Difficulty](https://steamcommunity.com/sharedfiles/filedetails/?id=3044524742) - Allows you to set the strength of enemies to 50% through 300% of their normal strength, among other things.
+* [Spawn Control](https://steamcommunity.com/sharedfiles/filedetails/?id=3044203151) - Restrict where enemies spawn. Also control how often Strange Portals and other stuff happens.
+* More Quests - Who doesn't want more quests like "Have 500 Food" or "Make 100 Coins in a Single Moon".
+* Can't Stop - Disables Pause functionality, can also lock the controls at full speed only.
+* Timekeeper - Keeps track of real time game is played, useful for timed challenges.
+* Cursed Worlds Difficulty - Adds difficulty to the DLC.
+* Challenges - One mod to rule them all. This mod would suggest challenges and set all the settings to get you started. (Or complain you don't have the right mods for the challenge.)
+
